@@ -18,4 +18,16 @@ export class UserController {
   signUp(@Body() userCredentialsDto: UserCredentialsDto): Promise<void> {
     return this.userService.signUp(userCredentialsDto);
   }
+
+  @Post('/signin')
+  @ApiOperation({ summary: 'SignIn User' })
+  @ApiResponse({
+    description: 'sign in to the application',
+    type: UserEntity,
+  })
+  signIn(
+    @Body() authCredentialsDto: UserCredentialsDto,
+  ): Promise<{ accessToken: string }> {
+    return this.userService.signInUser(authCredentialsDto);
+  }
 }

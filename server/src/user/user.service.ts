@@ -10,4 +10,8 @@ export class UserService {
   async signUp(userCredentialsDto: UserCredentialsDto): Promise<any> {
     return this.userRepository.createUser(userCredentialsDto);
   }
+
+  async signInUser(userCredentialsDto: UserCredentialsDto): Promise<any> {
+    return this.userRepository.signInUser(userCredentialsDto);
+  }
 }

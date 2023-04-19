@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -12,6 +13,7 @@ export class UserCredentialsDto {
     example: 'arieli',
     description: 'Username',
   })
+  @IsOptional()
   @IsString()
   @MinLength(4)
   @MaxLength(20)
