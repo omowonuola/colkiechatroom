@@ -1,0 +1,67 @@
+version: '3.9'
+services:
+
+  server:
+    container_name: server
+    build: server/ 
+    ports:
+      - 8081:8081
+    restart: on-failure
+    volumes:
+      - server:/usr/src/app
+    environment:
+            - PORT=8081
+            - DB_HOST=db
+            - DB_PORT=3306
+            - DB_USERNAME=root
+            - DB_PASSWORD=birmingham
+            - DB_DATABASE=chatroom
+            - JWT_SECRET='{dZqC_/KBzNSuPT~@!Gr5NHG^j]Jz"VQf(6>Q,\dp?_z9eC(C$-bJCEwRM}pC=2!'
+    networks:
+            - database
+
+  db:
+    image: postgres
+    container_name: postgresql
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: birmingham
+      POSTGRES_USER: postgres
+      POSTGRES_DB: chatroom
+    networks:
+      - database
+      - dbpg4
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME:-chatroom}", "-U", "${DB_USER:-postgres}" ]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5433:5432"
+
+  pgadmin4:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5000
+    networks:
+      - dbpg4
+    depends_on:
+      - db
+    ports:
+      - "5050:5000"
+    volumes:
+      - pgadmin4-data:/var/lib/pgadmin
+
+volumes:
+  server:
+  pgdata:
+  pgadmin4-data:
+
+networks:
+  database:
+  dbpg4:
