@@ -1,8 +1,8 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UserCredentialsDto } from './dto/user-credentials.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserEntity } from './entity/users.entity';
+import { UserEntity } from './model/users.entity';
 
 @Controller('api/users')
 @ApiTags('user')
@@ -15,7 +15,7 @@ export class UserController {
     description: 'create new user to the database',
     type: UserEntity,
   })
-  signUp(@Body() userCredentialsDto: UserCredentialsDto): Promise<void> {
+  signUp(@Body() userCredentialsDto: CreateUserDto): Promise<void> {
     return this.userService.signUp(userCredentialsDto);
   }
 
@@ -26,7 +26,7 @@ export class UserController {
     type: UserEntity,
   })
   signIn(
-    @Body() authCredentialsDto: UserCredentialsDto,
+    @Body() authCredentialsDto: CreateUserDto,
   ): Promise<{ accessToken: string }> {
     return this.userService.signInUser(authCredentialsDto);
   }

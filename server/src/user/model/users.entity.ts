@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { RoomEntity } from 'src/Rooms/model/rooms/rooms.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -26,4 +27,7 @@ export class UserEntity {
   })
   @Column()
   password: string;
+
+  @ManyToMany(() => RoomEntity, (room) => room.users)
+  rooms: RoomEntity[];
 }
