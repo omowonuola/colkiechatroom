@@ -66,4 +66,8 @@ export class UserRepository {
       throw new UnauthorizedException('Please check your login details');
     }
   }
+
+  public getOne(id: string): Promise<UserI> {
+    return this.userEntity.findOneOrFail({ where: { id: id } });
+  }
 }
