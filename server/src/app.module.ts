@@ -2,7 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
-import { UserEntity } from './user/entity/users.entity';
+import { UserEntity } from './user/model/users.entity';
+import { RoomsService } from './Rooms/service/room-service/rooms.service';
+import { RoomsModule } from './rooms/rooms.module';
+import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
+import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';
 
 @Module({
   imports: [
@@ -21,10 +25,13 @@ import { UserEntity } from './user/entity/users.entity';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [UserEntity],
+        entities: [UserEntity, RoomEntity, ConnectedUserEntity],
         synchronize: true,
       }),
     }),
+    RoomsModule,
   ],
+  controllers: [],
+  providers: [RoomsService],
 })
 export class AppModule {}
