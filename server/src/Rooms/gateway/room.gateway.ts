@@ -8,7 +8,7 @@ import {
 import { Socket, Server } from 'socket.io';
 import { UserRepository } from 'src/user/user.repository';
 import { UserI } from 'src/user/model/user.interface';
-import { UnauthorizedException } from '@nestjs/common';
+import { OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { RoomsService } from '../service/room-service/rooms.service';
 import { RoomI } from '../model/rooms/rooms.interface';
 import { PageI } from '../model/page.interface';
@@ -18,7 +18,9 @@ import { ConnectedUserI } from '../model/connected-user/connected-user.interface
 @WebSocketGateway({
   cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
 })
-export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class RoomGateway
+  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
+{
   @WebSocketServer()
   server: Server;
 
@@ -29,6 +31,10 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private roomRepository: RoomsService,
     private connectedUserRepository: ConnectedUserService,
   ) {}
+
+  async onModuleInit() {
+    await this.connectedUserRepository.deleteAll();
+  }
 
   async handleConnection(socket: Socket) {
     try {
