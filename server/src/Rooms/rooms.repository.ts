@@ -8,7 +8,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomEntity, UserEntity } from './model/rooms/rooms.entity';
-import { CreateRoomDto } from './dto/create-rooms.dto';
 import { RoomI } from './model/rooms/rooms.interface';
 import { UserI } from 'src/user/model/user.interface';
 
