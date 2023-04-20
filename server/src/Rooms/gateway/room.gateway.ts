@@ -12,6 +12,8 @@ import { UnauthorizedException } from '@nestjs/common';
 import { RoomsRepository } from '../rooms.repository';
 import { RoomI } from '../model/rooms/rooms.interface';
 import { PageI } from '../model/page.interface';
+import { ConnectedUserService } from '../service/connected-user/connected-user.service';
+import { ConnectedUserI } from '../model/connected-user/connected-user.interface';
 
 @WebSocketGateway({
   cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
@@ -25,6 +27,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private userRepository: UserRepository,
     private roomRepository: RoomsRepository,
+    private connectedUserRepository: ConnectedUserService,
   ) {}
 
   async handleConnection(socket: Socket) {
@@ -43,6 +46,12 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
           limit: 10,
         });
 
+        // save connection to DB
+        await this.connectedUserRepository.create({
+          socketId: socket.id,
+          user,
+        });
+
         // only emit rooms to the specific connected client
         return this.server.to(socket.id).emit('rooms', rooms);
       }
@@ -51,7 +60,9 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(socket: Socket) {
+  async handleDisconnect(socket: Socket) {
+    // remove connection from DB
+    await this.connectedUserRepository.deleteBySocketId(socket.id);
     socket.disconnect();
   }
 
@@ -61,8 +72,23 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('createRoom')
-  async onCreateRoom(socket: Socket, room: RoomI): Promise<RoomI> {
-    return this.roomRepository.createRoom(room, socket.data.user);
+  async onCreateRoom(socket: Socket, room: RoomI) {
+    const createdRoom: RoomI = await this.roomRepository.createRoom(
+      room,
+      socket.data.user,
+    );
+
+    for (const user of createdRoom.users) {
+      const connections: ConnectedUserI[] =
+        await this.connectedUserRepository.findByUser(user);
+      const rooms = await this.roomRepository.getRoomsForUser(user.id, {
+        page: 1,
+        limit: 10,
+      });
+      for (const connection of connections) {
+        await this.server.to(connection.socketId).emit('rooms', rooms);
+      }
+    }
   }
 
   @SubscribeMessage('paginateRooms')
