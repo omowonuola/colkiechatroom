@@ -15,6 +15,7 @@ import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user
       // validationSchema: configValidationSchema,
     }),
     UsersModule,
+    RoomsModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -29,9 +30,8 @@ import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user
         synchronize: true,
       }),
     }),
-    RoomsModule,
   ],
   controllers: [],
-  providers: [RoomsService],
+  providers: [],
 })
 export class AppModule {}
