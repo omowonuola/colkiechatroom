@@ -4,11 +4,13 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../../user/model/users.entity';
+import { JoinedRoomEntity } from '../joined-room/joined-room.entity';
 
 @Entity({ name: 'rooms' })
 export class RoomEntity {
@@ -29,9 +31,20 @@ export class RoomEntity {
   @Column({ nullable: true })
   description: string;
 
+  @ApiProperty({
+    example: UserEntity,
+    description: 'users',
+  })
   @ManyToMany(() => UserEntity)
   @JoinTable()
   users: UserEntity[];
+
+  @ApiProperty({
+    example: UserEntity,
+    description: 'users',
+  })
+  @OneToMany(() => JoinedRoomEntity, (joinedRoom) => joinedRoom.room)
+  joinedUsers: JoinedRoomEntity[];
 
   @ApiProperty({
     example: 'trespass@gmail.com',
