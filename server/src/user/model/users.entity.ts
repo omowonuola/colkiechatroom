@@ -11,6 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { RoomEntity } from 'src/Rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from 'src/Rooms/model/connected-user/connected-user.entity';
 import { JoinedRoomEntity } from 'src/Rooms/model/joined-room/joined-room.entity';
+import { MessageEntity } from 'src/Rooms/model/message/message.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {
@@ -58,6 +59,9 @@ export class UserEntity {
   })
   @ManyToMany(() => JoinedRoomEntity, (joinedRoom) => joinedRoom.room)
   joinedRooms: JoinedRoomEntity[];
+
+  @OneToMany(() => MessageEntity, (message) => message.user)
+  messages: MessageEntity[];
 
   @BeforeInsert()
   @BeforeUpdate()

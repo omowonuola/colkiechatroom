@@ -8,6 +8,7 @@ import { RoomsModule } from './rooms/rooms.module';
 import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';
 import { JoinedRoomEntity } from './Rooms/model/joined-room/joined-room.entity';
+import { MessageEntity } from './Rooms/model/message/message.entity';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { JoinedRoomEntity } from './Rooms/model/joined-room/joined-room.entity';
           RoomEntity,
           ConnectedUserEntity,
           JoinedRoomEntity,
+          MessageEntity,
         ],
         synchronize: true,
       }),
