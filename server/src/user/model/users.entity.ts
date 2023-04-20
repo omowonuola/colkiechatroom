@@ -1,4 +1,11 @@
-import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoomEntity } from 'src/Rooms/model/rooms/rooms.entity';
 
@@ -30,4 +37,11 @@ export class UserEntity {
 
   @ManyToMany(() => RoomEntity, (room) => room.users)
   rooms: RoomEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  emailToLowerCase() {
+    this.email = this.email.toLowerCase();
+    this.username = this.username.toLowerCase();
+  }
 }

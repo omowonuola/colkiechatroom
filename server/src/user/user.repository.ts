@@ -81,7 +81,7 @@ export class UserRepository {
   async findUsersByUsername(username: string): Promise<UserI[]> {
     return this.userEntity.find({
       where: {
-        username: Like(`%${username.toLowerCase()}%`),
+        username: Like(`%${username?.toLowerCase()}%`),
       },
     });
   }
