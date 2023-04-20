@@ -29,11 +29,11 @@ export class CreateUserDto {
   @IsString()
   @MinLength(8)
   @MaxLength(32)
-  @Matches(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/,
-    {
-      message: 'password is too weak',
-    },
-  )
+  // @Matches(
+  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$/,
+  //   {
+  //     message: 'password is too weak',
+  //   },
+  // )
   password: string;
 }

@@ -70,4 +70,8 @@ export class UserRepository {
   public getOne(id: string): Promise<UserI> {
     return this.userEntity.findOneOrFail({ where: { id: id } });
   }
+
+  public verifyJwt(jwt: string): Promise<any> {
+    return this.jwtService.verifyAsync(jwt);
+  }
 }
