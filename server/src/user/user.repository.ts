@@ -2,16 +2,20 @@ import {
   ConflictException,
   InternalServerErrorException,
   Logger,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { UserEntity } from './model/users.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './jwt-payload';
 import { UserI } from './model/user.interface';
+import {
+  IPaginationOptions,
+  paginate,
+  Pagination,
+} from 'nestjs-typeorm-paginate';
 
 export class UserRepository {
   private readonly logger = new Logger(UserRepository.name);
@@ -56,22 +60,37 @@ export class UserRepository {
       throw new UnauthorizedException('Please add email and password');
     }
     const checkUser = await this.userEntity.findOne({ where: { email } });
+    try {
+      if (checkUser && (await bcrypt.compare(password, checkUser.password))) {
+        const payload: JwtPayload = { email };
+        const accessToken: string = await this.jwtService.sign(payload);
 
-    if (checkUser && (await bcrypt.compare(password, checkUser.password))) {
-      const payload: JwtPayload = { email };
-      const accessToken: string = await this.jwtService.sign(payload);
-
-      return { status: 'SUCCESS', id: checkUser?.id, email, accessToken };
-    } else {
+        return { status: 'SUCCESS', id: checkUser?.id, email, accessToken };
+      } else {
+        throw new UnauthorizedException('Please check your login details');
+      }
+    } catch (error) {
       throw new UnauthorizedException('Please check your login details');
     }
   }
 
-  public getOne(id: string): Promise<UserI> {
-    return this.userEntity.findOneOrFail({ where: { id: id } });
+  async findAllUsers(options: IPaginationOptions): Promise<Pagination<UserI>> {
+    return paginate<UserEntity>(this.userEntity, options);
   }
 
-  public verifyJwt(jwt: string): Promise<any> {
-    return this.jwtService.verifyAsync(jwt);
+  async findUsersByUsername(username: string): Promise<UserI[]> {
+    return this.userEntity.find({
+      where: {
+        username: Like(`%${username.toLowerCase()}%`),
+      },
+    });
+  }
+
+  async getOne(id: string): Promise<UserI> {
+    return await this.userEntity.findOneOrFail({ where: { id: id } });
+  }
+
+  async verifyJwt(jwt: string): Promise<any> {
+    return await this.jwtService.verifyAsync(jwt);
   }
 }
