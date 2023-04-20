@@ -9,7 +9,7 @@ import { Socket, Server } from 'socket.io';
 import { UserRepository } from 'src/user/user.repository';
 import { UserI } from 'src/user/model/user.interface';
 import { UnauthorizedException } from '@nestjs/common';
-import { RoomsRepository } from '../rooms.repository';
+import { RoomsService } from '../service/room-service/rooms.service';
 import { RoomI } from '../model/rooms/rooms.interface';
 import { PageI } from '../model/page.interface';
 import { ConnectedUserService } from '../service/connected-user/connected-user.service';
@@ -26,7 +26,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   constructor(
     private userRepository: UserRepository,
-    private roomRepository: RoomsRepository,
+    private roomRepository: RoomsService,
     private connectedUserRepository: ConnectedUserService,
   ) {}
 
