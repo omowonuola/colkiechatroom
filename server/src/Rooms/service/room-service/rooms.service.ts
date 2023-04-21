@@ -1,11 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomEntity } from '../../model/rooms/rooms.entity';
@@ -28,6 +21,15 @@ export class RoomsService {
   async createRoom(room: RoomI, creator: UserI): Promise<RoomI> {
     const createRoom = await this.addRoomCreator(room, creator);
     return this.roomRepository.save(createRoom);
+  }
+
+  async getRoom(roomId: string): Promise<RoomI> {
+    return this.roomRepository.findOne({
+      where: {
+        id: roomId,
+        // relations: ['users']
+      },
+    });
   }
 
   async addRoomCreator(room: RoomI, creator: UserI): Promise<RoomI> {

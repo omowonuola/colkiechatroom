@@ -14,6 +14,8 @@ import { RoomI } from '../model/rooms/rooms.interface';
 import { PageI } from '../model/page.interface';
 import { ConnectedUserService } from '../service/connected-user/connected-user.service';
 import { ConnectedUserI } from '../model/connected-user/connected-user.interface';
+import { MessageService } from '../service/message/rooms.service';
+import { JoinedRoomService } from '../service/joined-room/joined-room.service';
 
 @WebSocketGateway({
   cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
@@ -30,10 +32,13 @@ export class RoomGateway
     private userRepository: UserRepository,
     private roomRepository: RoomsService,
     private connectedUserRepository: ConnectedUserService,
+    private joinedRoomService: JoinedRoomService,
+    private messageRepository: MessageService,
   ) {}
 
   async onModuleInit() {
     await this.connectedUserRepository.deleteAll();
+    await this.joinedRoomService.deleteAll();
   }
 
   async handleConnection(socket: Socket) {
@@ -105,5 +110,23 @@ export class RoomGateway
       { page: 1, limit: 10 },
     );
     return this.server.to(socket.id).emit('rooms', rooms);
+  }
+
+  @SubscribeMessage('joinRoom')
+  async onJoinRoom(socket: Socket, room: RoomI) {
+    const messages = await this.messageRepository.findMessagesForRoom(room, {
+      limit: 10,
+      page: 1,
+    });
+
+    // Save Connection to Room
+    await this.joinedRoomService.create({
+      socketId: socket.id,
+      user: socket.data.user,
+      room,
+    });
+
+    // send last message from Room to User
+    await this.server.to(socket.id).emit('messages', messages);
   }
 }
