@@ -7,6 +7,8 @@ import { RoomsService } from './Rooms/service/room-service/rooms.service';
 import { RoomsModule } from './rooms/rooms.module';
 import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';
+import { JoinedRoomEntity } from './Rooms/model/joined-room/joined-room.entity';
+import { MessageEntity } from './Rooms/model/message/message.entity';
 
 @Module({
   imports: [
@@ -26,7 +28,13 @@ import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [UserEntity, RoomEntity, ConnectedUserEntity],
+        entities: [
+          UserEntity,
+          RoomEntity,
+          ConnectedUserEntity,
+          JoinedRoomEntity,
+          MessageEntity,
+        ],
         synchronize: true,
       }),
     }),

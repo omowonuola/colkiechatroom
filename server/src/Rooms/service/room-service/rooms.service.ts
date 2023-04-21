@@ -1,11 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomEntity } from '../../model/rooms/rooms.entity';
@@ -22,12 +15,21 @@ export class RoomsService {
   private readonly logger = new Logger(RoomsService.name);
   constructor(
     @InjectRepository(RoomEntity)
-    private readonly roomEntity: Repository<RoomEntity>,
+    private readonly roomRepository: Repository<RoomEntity>,
   ) {}
 
   async createRoom(room: RoomI, creator: UserI): Promise<RoomI> {
     const createRoom = await this.addRoomCreator(room, creator);
-    return this.roomEntity.save(createRoom);
+    return this.roomRepository.save(createRoom);
+  }
+
+  async getRoom(roomId: string): Promise<RoomI> {
+    return this.roomRepository.findOne({
+      where: {
+        id: roomId,
+        // relations: ['users']
+      },
+    });
   }
 
   async addRoomCreator(room: RoomI, creator: UserI): Promise<RoomI> {
@@ -39,7 +41,7 @@ export class RoomsService {
     userId: string,
     options: IPaginationOptions,
   ): Promise<Pagination<RoomI>> {
-    const query = this.roomEntity
+    const query = this.roomRepository
       .createQueryBuilder('room')
       .leftJoin('room.users', 'users')
       .where('users.id = :userId', { userId })

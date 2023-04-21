@@ -6,13 +6,28 @@ import { RoomGateway } from './gateway/room.gateway';
 import { UsersModule } from 'src/user/user.module';
 import { ConnectedUserService } from './service/connected-user/connected-user.service';
 import { ConnectedUserEntity } from './model/connected-user/connected-user.entity';
+import { MessageService } from './service/message/rooms.service';
+import { MessageEntity } from './model/message/message.entity';
+import { JoinedRoomService } from './service/joined-room/joined-room.service';
+import { JoinedRoomEntity } from './model/joined-room/joined-room.entity';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forFeature([RoomEntity, ConnectedUserEntity]),
+    TypeOrmModule.forFeature([
+      RoomEntity,
+      ConnectedUserEntity,
+      JoinedRoomEntity,
+      MessageEntity,
+    ]),
   ],
   controllers: [],
-  providers: [RoomsService, RoomGateway, ConnectedUserService],
+  providers: [
+    RoomsService,
+    RoomGateway,
+    ConnectedUserService,
+    JoinedRoomService,
+    MessageService,
+  ],
 })
 export class RoomsModule {}
