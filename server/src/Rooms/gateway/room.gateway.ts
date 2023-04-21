@@ -16,6 +16,8 @@ import { ConnectedUserService } from '../service/connected-user/connected-user.s
 import { ConnectedUserI } from '../model/connected-user/connected-user.interface';
 import { MessageService } from '../service/message/rooms.service';
 import { JoinedRoomService } from '../service/joined-room/joined-room.service';
+import { MessageI } from '../model/message/message.interface';
+import { JoinedRoomI } from '../model/joined-room/joined-room.interface';
 
 @WebSocketGateway({
   cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
@@ -32,13 +34,13 @@ export class RoomGateway
     private userRepository: UserRepository,
     private roomRepository: RoomsService,
     private connectedUserRepository: ConnectedUserService,
-    private joinedRoomService: JoinedRoomService,
+    private joinedRoomRepository: JoinedRoomService,
     private messageRepository: MessageService,
   ) {}
 
   async onModuleInit() {
     await this.connectedUserRepository.deleteAll();
-    await this.joinedRoomService.deleteAll();
+    await this.joinedRoomRepository.deleteAll();
   }
 
   async handleConnection(socket: Socket) {
@@ -120,7 +122,7 @@ export class RoomGateway
     });
 
     // Save Connection to Room
-    await this.joinedRoomService.create({
+    await this.joinedRoomRepository.create({
       socketId: socket.id,
       user: socket.data.user,
       room,
@@ -128,5 +130,24 @@ export class RoomGateway
 
     // send last message from Room to User
     await this.server.to(socket.id).emit('messages', messages);
+  }
+
+  @SubscribeMessage('leaveRoom')
+  async onLeaveRoom(socket: Socket) {
+    // remove connection from Joined Rooms
+    await this.joinedRoomRepository.deleteBySocketId(socket.id);
+  }
+
+  @SubscribeMessage('addMessage')
+  async onAddMessage(socket: Socket, message: MessageI) {
+    const createdMessage: MessageI = await this.messageRepository.create({
+      ...message,
+      user: socket.data.user,
+    });
+    const room: RoomI = await this.roomRepository.getRoom(
+      createdMessage.room.id,
+    );
+    const joinedUsers: JoinedRoomI[] =
+      await this.joinedRoomRepository.findByRoom(room);
   }
 }
