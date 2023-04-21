@@ -22,12 +22,12 @@ export class RoomsService {
   private readonly logger = new Logger(RoomsService.name);
   constructor(
     @InjectRepository(RoomEntity)
-    private readonly roomEntity: Repository<RoomEntity>,
+    private readonly roomRepository: Repository<RoomEntity>,
   ) {}
 
   async createRoom(room: RoomI, creator: UserI): Promise<RoomI> {
     const createRoom = await this.addRoomCreator(room, creator);
-    return this.roomEntity.save(createRoom);
+    return this.roomRepository.save(createRoom);
   }
 
   async addRoomCreator(room: RoomI, creator: UserI): Promise<RoomI> {
@@ -39,7 +39,7 @@ export class RoomsService {
     userId: string,
     options: IPaginationOptions,
   ): Promise<Pagination<RoomI>> {
-    const query = this.roomEntity
+    const query = this.roomRepository
       .createQueryBuilder('room')
       .leftJoin('room.users', 'users')
       .where('users.id = :userId', { userId })
