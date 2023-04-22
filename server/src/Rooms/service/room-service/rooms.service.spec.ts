@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserI } from 'src/user/model/user.interface';
 import { RoomI } from 'src/Rooms/model/rooms/rooms.interface';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 describe('RoomsService', () => {
   let roomsService: RoomsService;
@@ -118,6 +119,76 @@ describe('RoomsService', () => {
         description: 'This is a test room',
         users: [mockUser],
       });
+    });
+  });
+
+  describe('getRoomsForUser', () => {
+    it('should return a pagination object of rooms for the given user id', async () => {
+      // Create a mock room object and user object
+      const mockRoom: RoomEntity = {
+        id: '1',
+        name: 'Mock Room',
+        description: 'This is a mock room',
+        users: [],
+        joinedUsers: [],
+        messages: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const mockUser: UserI = {
+        id: '456',
+        username: 'Test User',
+        email: 'testuser@test.com',
+      };
+
+      // Mock the roomRepository and add the mock room object to it
+      const mockRoomRepository = {
+        createQueryBuilder: jest.fn(() => ({
+          leftJoin: jest.fn().mockReturnThis(),
+          where: jest.fn().mockReturnThis(),
+          leftJoinAndSelect: jest.fn().mockReturnThis(),
+          orderBy: jest.fn().mockReturnThis(),
+        })),
+        metadata: {
+          columns: [],
+          relations: [],
+        },
+        findOne: jest.fn(() => Promise.resolve(mockRoom)),
+      };
+      const mockPaginatedResult = {
+        items: [mockRoom],
+        meta: {
+          currentPage: 1,
+          itemCount: 1,
+          itemsPerPage: 10,
+          totalItems: 1,
+          totalPages: 1,
+        },
+      };
+      const mockPaginate = jest.fn(() => Promise.resolve(mockPaginatedResult));
+      roomsService = new RoomsService(mockRoomRepository as any);
+      jest.mock('nestjs-typeorm-paginate', () => ({
+        paginate: mockPaginate,
+      }));
+
+      // Call the getRoomsForUser method with the mock user id and mock pagination options
+      const mockUserId = '456';
+      const mockPaginationOptions: IPaginationOptions = {
+        limit: 10,
+        page: 1,
+      };
+      const result = await roomsService.getRoomsForUser(
+        mockUserId,
+        mockPaginationOptions,
+      );
+
+      // Check that the result is a pagination object
+      expect(result).toEqual(expect.any(Pagination));
+      expect(result.items).toContainEqual(expect.objectContaining(mockRoom));
+      expect(mockPaginate).toHaveBeenCalledWith(
+        expect.any(Object),
+        mockPaginationOptions,
+      );
     });
   });
 });
