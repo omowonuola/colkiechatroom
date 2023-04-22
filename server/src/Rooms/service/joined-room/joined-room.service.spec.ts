@@ -178,4 +178,5 @@ describe('JoinedRoomService', () => {
       expect(repository.delete).toHaveBeenCalledWith({ socketId });
     });
   });
+
 });
