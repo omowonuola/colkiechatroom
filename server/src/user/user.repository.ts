@@ -55,9 +55,7 @@ export class UserRepository {
   }
 
   async signInUser(user: UserI): Promise<any> {
-    if (!user.email || !user.password) {
-      throw new UnauthorizedException('Please add email and password');
-    }
+ 
     const email = user.email;
     const checkUser = await this.userEntity.findOne({ where: { email } });
 

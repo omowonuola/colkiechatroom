@@ -29,7 +29,6 @@ export class RoomsService {
     return this.roomRepository.findOne({
       where: {
         id: roomId,
-        // relations: ['users']
       },
     });
   }
