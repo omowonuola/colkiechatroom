@@ -12,7 +12,7 @@ import { UserEntity } from '../../../user/model/users.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { RoomEntity } from '../rooms/rooms.entity';
 
-@Entity({ name: 'message' })
+@Entity()
 export class MessageEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;

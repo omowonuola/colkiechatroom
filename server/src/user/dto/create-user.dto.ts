@@ -19,6 +19,10 @@ export class CreateUserDto {
   @MaxLength(20)
   username: string;
 
+  @ApiProperty({
+    example: 'troye@gmail.com',
+    description: 'email',
+  })
   @IsEmail()
   email: string;
 

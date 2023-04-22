@@ -13,7 +13,7 @@ import { UserEntity } from '../../../user/model/users.entity';
 import { JoinedRoomEntity } from '../joined-room/joined-room.entity';
 import { MessageEntity } from '../message/message.entity';
 
-@Entity({ name: 'rooms' })
+@Entity()
 export class RoomEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -68,4 +68,3 @@ export class RoomEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-export { UserEntity };
