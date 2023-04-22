@@ -54,7 +54,7 @@ export class UserRepository {
     }
   }
 
-  async signInUser(user: UserI): Promise<object> {
+  async signInUser(user: UserI): Promise<any> {
     if (!user.email || !user.password) {
       throw new UnauthorizedException('Please add email and password');
     }
@@ -69,7 +69,7 @@ export class UserRepository {
         const id = checkUser.id;
         const payload: UserI = await this.userEntity.findOne({ where: { id } });
 
-        const accessToken: string = await this.jwtService.signAsync({
+        const accessToken: string = await this.jwtService.sign({
           payload,
         });
 
