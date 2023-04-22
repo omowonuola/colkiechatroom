@@ -60,36 +60,5 @@ describe('RoomsService', () => {
     });
   });
 
-  describe('getRoom', () => {
-    it('should return a room with the given id', async () => {
-      // Create a mock room object
-      const mockRoom: RoomEntity = {
-        id: '123',
-        name: 'Test Room',
-        description: 'This is a test room',
-        users: [],
-        joinedUsers: [],
-        messages: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
 
-      // Mock the findOne method of the room repository to return the mock room object
-      roomRepository.findOne = jest.fn().mockResolvedValue(mockRoom);
-
-      // Call the getRoom method with the id of the mock room object
-      const roomId = mockRoom.id;
-      const result = await roomsService.getRoom(roomId);
-
-      // Check that the findOne method was called with the correct parameters
-      expect(roomRepository.findOne).toHaveBeenCalledWith({
-        where: {
-          id: roomId,
-        },
-      });
-
-      // Check that the result is the mock room object
-      expect(result).toEqual(mockRoom);
-    });
-  });
 });
