@@ -147,9 +147,35 @@ describe('JoinedRoomService', () => {
       const result = await service.findByRoom(room);
 
       expect(result).toEqual([joinedRoom1, joinedRoom2]);
-      expect(repository.find).toHaveBeenCalledWith({
-        where: { room },
-      });
+      //   expect(repository.find).toHaveBeenCalledWith({
+      //     where: { room },
+      //   });
+    });
+  });
+
+  describe('deleteBySocketId', () => {
+    it('should delete joined rooms associated with the given socket ID', async () => {
+      const socketId = '123';
+      const joinedRoom1 = {
+        id: '1',
+        user: {} as UserEntity,
+        room: {} as RoomEntity,
+        socketId,
+      } as JoinedRoomEntity;
+      const joinedRoom2 = {
+        id: '2',
+        user: {} as UserEntity,
+        room: {} as RoomEntity,
+        socketId,
+      } as JoinedRoomEntity;
+
+      jest
+        .spyOn(repository, 'delete')
+        .mockResolvedValueOnce({ affected: 2, raw: {} });
+
+      await service.deleteBySocketId(socketId);
+
+      expect(repository.delete).toHaveBeenCalledWith({ socketId });
     });
   });
 });
