@@ -33,6 +33,9 @@ export class RoomsService {
   }
 
   async addRoomCreator(room: RoomI, creator: UserI): Promise<RoomI> {
+    if (!room.users) {
+      room.users = [];
+    }
     room.users.push(creator);
     return room;
   }
