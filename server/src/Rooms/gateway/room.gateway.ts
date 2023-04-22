@@ -14,7 +14,7 @@ import { RoomI } from '../model/rooms/rooms.interface';
 import { PageI } from '../model/page.interface';
 import { ConnectedUserService } from '../service/connected-user/connected-user.service';
 import { ConnectedUserI } from '../model/connected-user/connected-user.interface';
-import { MessageService } from '../service/message/rooms.service';
+import { MessageService } from '../service/message/message.service';
 import { JoinedRoomService } from '../service/joined-room/joined-room.service';
 import { MessageI } from '../model/message/message.interface';
 import { JoinedRoomI } from '../model/joined-room/joined-room.interface';
