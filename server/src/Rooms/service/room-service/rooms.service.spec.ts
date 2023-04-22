@@ -92,4 +92,32 @@ describe('RoomsService', () => {
       expect(result).toEqual(mockRoom);
     });
   });
+
+  describe('addRoomCreator', () => {
+    it('should add a user to the users array of the room object', async () => {
+      // Create a mock room object and user object
+      const mockRoom: RoomI = {
+        id: '123',
+        name: 'Test Room',
+        description: 'This is a test room',
+        users: [],
+      };
+      const mockUser: UserI = {
+        id: '456',
+        username: 'Test User',
+        email: 'testuser@test.com',
+      };
+
+      // Call the addRoomCreator method with the mock room and user objects
+      const result = await roomsService.addRoomCreator(mockRoom, mockUser);
+
+      // Check that the result is the mock room object with the user added to the users array
+      expect(result).toEqual({
+        id: '123',
+        name: 'Test Room',
+        description: 'This is a test room',
+        users: [mockUser],
+      });
+    });
+  });
 });
