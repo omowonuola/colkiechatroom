@@ -55,15 +55,23 @@ export class UserRepository {
   }
 
   async signInUser(user: UserI): Promise<object> {
-    const { email, password } = user;
-    if (!email || !password) {
+    if (!user.email || !user.password) {
       throw new UnauthorizedException('Please add email and password');
     }
+    const email = user.email;
     const checkUser = await this.userEntity.findOne({ where: { email } });
+
     try {
-      if (checkUser && (await bcrypt.compare(password, checkUser.password))) {
-        const payload: JwtPayload = { email };
-        const accessToken: string = await this.jwtService.sign(payload);
+      if (
+        checkUser &&
+        (await bcrypt.compare(user.password, checkUser.password))
+      ) {
+        const id = checkUser.id;
+        const payload: UserI = await this.userEntity.findOne({ where: { id } });
+
+        const accessToken: string = await this.jwtService.signAsync({
+          payload,
+        });
 
         return { status: 'SUCCESS', id: checkUser?.id, email, accessToken };
       } else {
@@ -87,7 +95,7 @@ export class UserRepository {
   }
 
   async getOne(id: string): Promise<UserI> {
-    return await this.userEntity.findOneOrFail({ where: { id: id } });
+    return await this.userEntity.findOneOrFail({ where: { id } });
   }
 
   async verifyJwt(jwt: string): Promise<any> {

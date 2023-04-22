@@ -5,9 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { RoomEntity, UserEntity } from '../rooms/rooms.entity';
+import { RoomEntity } from '../rooms/rooms.entity';
+import { UserEntity } from '../../../user/model/users.entity';
 
-@Entity({ name: 'joinedroom' })
 @Entity()
 export class JoinedRoomEntity {
   @PrimaryGeneratedColumn('uuid')

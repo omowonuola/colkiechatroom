@@ -6,8 +6,8 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Socket, Server } from 'socket.io';
-import { UserRepository } from 'src/user/user.repository';
-import { UserI } from 'src/user/model/user.interface';
+import { UserRepository } from '../../user/user.repository';
+import { UserI } from '../../user/model/user.interface';
 import { OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { RoomsService } from '../service/room-service/rooms.service';
 import { RoomI } from '../model/rooms/rooms.interface';
@@ -46,25 +46,24 @@ export class RoomGateway
   async handleConnection(socket: Socket) {
     try {
       const decodeToken = await this.userRepository.verifyJwt(
-        socket.handshake.headers.authorization,
+        socket.handshake.auth.token,
       );
-      console.log(decodeToken, 'here');
-      const user: UserI = await this.userRepository.getOne(decodeToken.user.id);
+      const user: UserI = await this.userRepository.getOne(
+        decodeToken.payload.id,
+      );
       if (!user) {
         return this.disconnect(socket);
       } else {
-        socket.data.user = user;
+        // socket.data.user = user;
         const rooms = await this.roomRepository.getRoomsForUser(user.id, {
           page: 1,
           limit: 10,
         });
-
         // save connection to DB
         await this.connectedUserRepository.create({
           socketId: socket.id,
           user,
         });
-
         // only emit rooms to the specific connected client
         return this.server.to(socket.id).emit('rooms', rooms);
       }
@@ -149,5 +148,10 @@ export class RoomGateway
     );
     const joinedUsers: JoinedRoomI[] =
       await this.joinedRoomRepository.findByRoom(room);
+
+    //   send message to all joined users(currently-online) in the room
+    for (const user of joinedUsers) {
+      await this.server.to(user.socketId).emit('message', createdMessage);
+    }
   }
 }

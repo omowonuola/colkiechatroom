@@ -40,13 +40,13 @@ export class RoomsService {
   async getRoomsForUser(
     userId: string,
     options: IPaginationOptions,
-  ): Promise<Pagination<RoomI>> {
+  ): Promise<Pagination<object>> {
     const query = this.roomRepository
-      .createQueryBuilder('room')
-      .leftJoin('room.users', 'users')
+      .createQueryBuilder('room_entity')
+      .leftJoin('room_entity.users', 'users')
       .where('users.id = :userId', { userId })
-      .leftJoinAndSelect('room.users', 'all_users')
-      .orderBy('room.updated_at', 'DESC');
+      .leftJoinAndSelect('room_entity.users', 'all_users')
+      .orderBy('room_entity.updatedAt', 'DESC');
 
     return paginate(query, options);
   }
