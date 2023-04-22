@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RoomEntity } from '../../model/rooms/rooms.entity';
 import {
+  IPaginationLinks,
+  IPaginationMeta,
   IPaginationOptions,
   paginate,
   Pagination,
@@ -33,6 +35,9 @@ export class RoomsService {
   }
 
   async addRoomCreator(room: RoomI, creator: UserI): Promise<RoomI> {
+    if (!room.users) {
+      room.users = [];
+    }
     room.users.push(creator);
     return room;
   }

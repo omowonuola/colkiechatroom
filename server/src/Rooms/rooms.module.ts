@@ -6,7 +6,7 @@ import { RoomGateway } from './gateway/room.gateway';
 import { UsersModule } from '../user/user.module';
 import { ConnectedUserService } from './service/connected-user/connected-user.service';
 import { ConnectedUserEntity } from './model/connected-user/connected-user.entity';
-import { MessageService } from './service/message/rooms.service';
+import { MessageService } from './service/message/message.service';
 import { MessageEntity } from './model/message/message.entity';
 import { JoinedRoomService } from './service/joined-room/joined-room.service';
 import { JoinedRoomEntity } from './model/joined-room/joined-room.entity';
