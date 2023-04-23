@@ -14,7 +14,6 @@ API
 Before starting, make sure you have these components on your local machine:
 
 - An up-to-date release of [NodeJS](https://nodejs.org/) and YARN
-- A SQL database with TYPEORM npm install --save typeorm mysql2 (https://docs.nestjs.com/recipes/sql-typeorm#sql-typeorm)
 
 ### 1.2 Project configuration
 
