@@ -10,15 +10,16 @@ import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';
 import { JoinedRoomEntity } from './Rooms/model/joined-room/joined-room.entity';
 import { MessageEntity } from './Rooms/model/message/message.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: [`.env.${process.env.STAGE}`],
-      // validationSchema: configValidationSchema,
     }),
     UsersModule,
     RoomsModule,
+    AuthModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -7,6 +7,7 @@ import {
 import { Request, Response, NextFunction } from 'express';
 import { UserI } from 'src/user/model/user.interface';
 import { UserRepository } from '../user/user.repository';
+import { AuthService } from 'src/auth/service/auth.service';
 
 export interface RequestModel extends Request {
   user: UserI;
@@ -14,12 +15,15 @@ export interface RequestModel extends Request {
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private authService: AuthService,
+  ) {}
 
   async use(req: RequestModel, res: Response, next: NextFunction) {
     try {
       const tokenArray: string[] = req.headers['authorization'].split(' ');
-      const decodedToken = await this.userRepository.verifyJwt(tokenArray[1]);
+      const decodedToken = await this.authService.verifyJwt(tokenArray[1]);
 
       // make sure that the user is not deleted, or that props or rights changed compared to the time when the jwt was issued
       const user: UserI = await this.userRepository.getOne(

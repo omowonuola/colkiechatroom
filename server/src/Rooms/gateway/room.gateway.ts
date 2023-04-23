@@ -18,6 +18,7 @@ import { MessageService } from '../service/message/message.service';
 import { JoinedRoomService } from '../service/joined-room/joined-room.service';
 import { MessageI } from '../model/message/message.interface';
 import { JoinedRoomI } from '../model/joined-room/joined-room.interface';
+import { AuthService } from 'src/auth/service/auth.service';
 
 @WebSocketGateway({
   cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
@@ -36,6 +37,7 @@ export class RoomGateway
     private connectedUserRepository: ConnectedUserService,
     private joinedRoomRepository: JoinedRoomService,
     private messageRepository: MessageService,
+    private authService: AuthService,
   ) {}
 
   async onModuleInit() {
@@ -45,12 +47,10 @@ export class RoomGateway
 
   async handleConnection(socket: Socket) {
     try {
-      const decodeToken = await this.userRepository.verifyJwt(
+      const decodeToken = await this.authService.verifyJwt(
         socket.handshake.auth.token,
       );
-      const user: UserI = await this.userRepository.getOne(
-        decodeToken.payload.id,
-      );
+      const user: UserI = await this.userRepository.getOne(decodeToken.user.id);
       if (!user) {
         return this.disconnect(socket);
       } else {

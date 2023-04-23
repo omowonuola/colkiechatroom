@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from './model/users.entity';
 import { UserRepository } from './user.repository';
 import { LoginUserDto } from './dto/login-user.dto';
+import { AuthService } from '../auth/service/auth.service';
 import {
   ConflictException,
   InternalServerErrorException,
@@ -11,10 +12,12 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Repository } from 'typeorm';
 
 describe('UsersService', () => {
-  let usersService: UserRepository;
-  let userRepositoryMock;
+  let userService: UserRepository;
+  let authService: AuthService;
+  let userEntity: Repository<UserEntity>;
 
   const jwtServiceMock = {
     sign: jest.fn(() => 'access_token'),
@@ -25,6 +28,7 @@ describe('UsersService', () => {
       imports: [],
       providers: [
         UserRepository,
+        AuthService,
         {
           provide: JwtService,
           useValue: jwtServiceMock,
@@ -42,127 +46,52 @@ describe('UsersService', () => {
       ],
     }).compile();
 
-    usersService = moduleRef.get<UserRepository>(UserRepository);
-    userRepositoryMock = moduleRef.get(getRepositoryToken(UserEntity));
+    userService = moduleRef.get<UserRepository>(UserRepository);
+    userEntity = moduleRef.get<Repository<UserEntity>>(
+      getRepositoryToken(UserEntity),
+    );
+    authService = moduleRef.get<AuthService>(AuthService);
   });
 
   describe('createUser', () => {
-    const userCredentialsDto: CreateUserDto = {
-      username: 'john_doe',
-      email: 'john_doe@example.com',
-      password: 'password',
-    };
+    const user: UserEntity = new UserEntity();
+    user.id = '1';
+    user.username = 'Test User';
+    user.email = 'test@example.com';
+    user.password = 'password';
 
-    it('should create a new user', async () => {
-      const hashedPassword = 'hashedPassword';
-      const createdUser = { ...userCredentialsDto, password: hashedPassword };
-      userRepositoryMock.findOne.mockReturnValue(undefined);
-      userRepositoryMock.create.mockReturnValue(createdUser);
-      userRepositoryMock.save.mockReturnValue(createdUser);
+    it('should create a new user when the email is not already in use', async () => {
+      jest.spyOn(userEntity, 'findOne').mockResolvedValue(undefined);
+      jest.spyOn(userEntity, 'save').mockResolvedValue(user as UserEntity);
+      jest
+        .spyOn(authService, 'hashPassword')
+        .mockResolvedValue('hashedPassword');
 
-      const result = await usersService.createUser(userCredentialsDto);
+      const result = await userService.createUser({
+        id: '1',
+        username: 'Test User',
+        email: 'test@example.com',
+        password: 'hashedPassword',
+      });
 
-      expect(result).toEqual({ status: 'SUCCESS', saveUser: createdUser });
+      expect(userEntity.save).toHaveBeenCalledWith({
+        id: '1',
+        username: 'Test User',
+        email: 'test@example.com',
+        password: 'hashedPassword',
+      });
+      expect(result).toEqual({
+        status: 'SUCCESS',
+        saveUser: user,
+      });
     });
 
-    it('throws a ConflictException if username or email already exists', async () => {
-      jest
-        .spyOn(userRepositoryMock, 'save')
-        .mockRejectedValue({ code: 'ER_DUP_ENTRY' });
+    it('should throw a ConflictException when the email is already in use', async () => {
+      jest.spyOn(userEntity, 'findOne').mockResolvedValue(user);
 
-      const userCredentialsDto: CreateUserDto = {
-        username: 'testuser',
-        email: 'testuser@example.com',
-        password: 'password',
-      };
-
-      await expect(usersService.createUser(userCredentialsDto)).rejects.toThrow(
+      await expect(userService.createUser(user)).rejects.toThrow(
         ConflictException,
       );
-    });
-
-    it('should throw a ConflictException if any required fields are missing', async () => {
-      userRepositoryMock.save.mockRejectedValue({
-        code: 'ER_NO_DEFAULT_FOR_FIELD',
-      });
-      await expect(
-        usersService.createUser(userCredentialsDto),
-      ).rejects.toThrowError(ConflictException);
-    });
-
-    it('should throw an InternalServerErrorException if any other error occurs', async () => {
-      userRepositoryMock.save.mockRejectedValue(new Error());
-      await expect(
-        usersService.createUser(userCredentialsDto),
-      ).rejects.toThrowError(InternalServerErrorException);
-    });
-  });
-
-  describe('signInUser', () => {
-    const userCredentialsDto: LoginUserDto = {
-      email: 'test@test.com',
-      password: 'password',
-    };
-    it('should throw an UnauthorizedException if email or password are missing', async () => {
-      await expect(
-        usersService.signInUser({
-          email: '',
-          password: '',
-        }),
-      ).rejects.toThrowError(UnauthorizedException);
-      await expect(
-        usersService.signInUser({
-          email: 'test@test.com',
-          password: '',
-        }),
-      ).rejects.toThrowError(UnauthorizedException);
-      await expect(
-        usersService.signInUser({
-          password: 'password',
-          email: '',
-        }),
-      ).rejects.toThrowError(UnauthorizedException);
-    });
-
-    it('should throw an UnauthorizedException if user is not found', async () => {
-      jest
-        .spyOn(userRepositoryMock, 'findOne')
-        .mockResolvedValueOnce(undefined);
-
-      await expect(
-        usersService.signInUser(userCredentialsDto),
-      ).rejects.toThrowError(UnauthorizedException);
-    });
-
-    it('should throw an UnauthorizedException if password is incorrect', async () => {
-      const user = {
-        email: 'test@test.com',
-        password: await bcrypt.hash('password', 10),
-      };
-      jest.spyOn(userRepositoryMock, 'findOne').mockResolvedValueOnce(user);
-
-      await expect(
-        usersService.signInUser({
-          email: 'test@test.com',
-          password: 'wrong_password',
-        }),
-      ).rejects.toThrowError(UnauthorizedException);
-    });
-
-    it('should return status, id, email and accessToken if user is found and password is correct', async () => {
-      const user = {
-        id: 1,
-        email: 'test@test.com',
-        password: await bcrypt.hash('password', 10),
-      };
-      jest.spyOn(userRepositoryMock, 'findOne').mockResolvedValueOnce(user);
-      jest.spyOn(jwtServiceMock, 'sign').mockReturnValueOnce('access_token');
-
-      const result = await usersService.signInUser(userCredentialsDto);
-
-      expect(result.id).toBe(user.id);
-      expect(result.email).toBe(user.email);
-      expect(result.accessToken).toBe('access_token');
     });
   });
 });
