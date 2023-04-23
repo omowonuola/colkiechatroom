@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { MessageEntity } from '../../model/message/message.entity';
-import { MessageService } from '../message/message.service';
+import { MessageService } from './message.service';
 import { RoomEntity } from '../../model/rooms/rooms.entity';
 import { UserEntity } from '../../../user/model/users.entity';
 import { MessageI } from '../../model/message/message.interface';
