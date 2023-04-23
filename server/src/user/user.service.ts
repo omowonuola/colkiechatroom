@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './model/users.entity';
 import { UserRepository } from './user.repository';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { UserI } from './model/user.interface';

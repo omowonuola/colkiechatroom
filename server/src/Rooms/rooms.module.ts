@@ -10,10 +10,12 @@ import { MessageService } from './service/message/message.service';
 import { MessageEntity } from './model/message/message.entity';
 import { JoinedRoomService } from './service/joined-room/joined-room.service';
 import { JoinedRoomEntity } from './model/joined-room/joined-room.entity';
+import { AuthModule } from 'src/auth/auth.module';
 
 @Module({
   imports: [
     UsersModule,
+    AuthModule,
     TypeOrmModule.forFeature([
       RoomEntity,
       ConnectedUserEntity,
@@ -21,7 +23,6 @@ import { JoinedRoomEntity } from './model/joined-room/joined-room.entity';
       MessageEntity,
     ]),
   ],
-  controllers: [],
   providers: [
     RoomsService,
     RoomGateway,

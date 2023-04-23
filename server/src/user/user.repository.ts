@@ -1,87 +1,85 @@
 import {
   ConflictException,
-  InternalServerErrorException,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
 import { UserEntity } from './model/users.entity';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { JwtPayload } from './jwt-payload';
 import { UserI } from './model/user.interface';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import { AuthService } from '../auth/service/auth.service';
 
 export class UserRepository {
   private readonly logger = new Logger(UserRepository.name);
   constructor(
     @InjectRepository(UserEntity)
     private userEntity: Repository<UserEntity>,
-    private jwtService: JwtService,
+    private authService: AuthService,
   ) {}
 
   async createUser(user: UserI): Promise<object> {
-    const { username, email, password } = user;
-
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = this.userEntity.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
-
     try {
-      //   return await this.userEntity.save(newUser);
-      const saveUser = await this.userEntity.save(newUser);
-      return { status: 'SUCCESS', saveUser };
-    } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        // checking for duplicate username/email
-        throw new ConflictException('Username/Email already exists');
-        // checking for all required fields filled
-      } else if (error.code === 'ER_NO_DEFAULT_FOR_FIELD') {
-        throw new ConflictException('All fields are required');
+      const userExists: boolean = await this.mailExists(user.email);
+      if (!userExists) {
+        const hashPassword: string = await this.hashPassword(user.password);
+        // update password field with hashed password
+        user.password = hashPassword;
+        const saveUser = await this.userEntity.save(
+          this.userEntity.create(user),
+        );
+        return { status: 'SUCCESS', saveUser };
       } else {
-        throw new InternalServerErrorException();
+        throw new ConflictException('Username/Email already exists');
       }
+    } catch (error) {
+      throw new ConflictException('Username/Email already exists');
     }
   }
 
-  async signInUser(user: UserI): Promise<any> {
- 
-    const email = user.email;
-    const checkUser = await this.userEntity.findOne({ where: { email } });
-
+  async signInUser(user: UserI): Promise<object> {
     try {
-      if (
-        checkUser &&
-        (await bcrypt.compare(user.password, checkUser.password))
-      ) {
-        const id = checkUser.id;
-        const payload: UserI = await this.userEntity.findOne({ where: { id } });
+      const checkUser: UserI = await this.findByEmail(user.email);
+      if (checkUser) {
+        const matchPassword: boolean = await this.validatePassword(
+          user.password,
+          checkUser.password,
+        );
+        if (matchPassword) {
+          const payload: UserI = await this.findOne(checkUser.id);
+          const accessToken = this.authService.generateJwt(payload);
 
-        const accessToken: string = await this.jwtService.sign({
-          payload,
-        });
-
-        return { status: 'SUCCESS', id: checkUser?.id, email, accessToken };
+          console.log(accessToken);
+          return {
+            status: 'SUCCESS',
+            id: checkUser?.id,
+            email: checkUser?.email,
+            accessToken,
+          };
+        } else {
+          throw new UnauthorizedException('Please check your login details');
+        }
       } else {
         throw new UnauthorizedException('Please check your login details');
       }
     } catch (error) {
-      throw new UnauthorizedException('Please check your login details');
+      throw new NotFoundException('User Not Found');
     }
   }
 
   async findAllUsers(options: IPaginationOptions): Promise<Pagination<UserI>> {
     return paginate<UserEntity>(this.userEntity, options);
+  }
+
+  private async findByEmail(email: string): Promise<UserI> {
+    return this.userEntity.findOne({
+      where: { email },
+    });
   }
 
   async findUsersByUsername(username: string): Promise<UserI[]> {
@@ -96,7 +94,27 @@ export class UserRepository {
     return await this.userEntity.findOneOrFail({ where: { id } });
   }
 
-  async verifyJwt(jwt: string): Promise<any> {
-    return await this.jwtService.verifyAsync(jwt);
+  private async findOne(id: string): Promise<UserI> {
+    return this.userEntity.findOne({ where: { id } });
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    return this.authService.hashPassword(password);
+  }
+
+  private async validatePassword(
+    password: string,
+    storedPasswordHash: string,
+  ): Promise<any> {
+    return this.authService.comparePasswords(password, storedPasswordHash);
+  }
+
+  private async mailExists(email: string): Promise<boolean> {
+    const user = await this.userEntity.findOne({ where: { email } });
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

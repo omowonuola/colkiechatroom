@@ -2,11 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { JwtPayload } from './jwt-payload';
-import { UserEntity } from './model/users.entity';
+import { JwtPayload } from '../guards/jwt-payload';
+import { UserEntity } from '../../user/model/users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserI } from './model/user.interface';
+import { UserI } from '../../user/model/user.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(users: UserI): Promise<UserEntity> {
+  async validate(users: JwtPayload): Promise<UserEntity> {
     const id = users.id;
     const user: UserEntity = await this.userEntity.findOne({
       where: { id },
