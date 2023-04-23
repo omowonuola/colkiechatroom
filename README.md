@@ -4,17 +4,19 @@ CHAT ROOM APP
 API
 
 - REST API With Nestjs
-- Swagger documentation, nextjs logger, ...
-- Folder Structure, Code Samples
+- Swagger documentation,
+- Folder Structure
 
 ## 1. Getting started
+## Project goals
+
+The goal of this project is to build a Chat Room that allows user to create room, add users to room, send message and receive message using NestJS.
 
 ### 1.1 Requirements
 
 Before starting, make sure you have these components on your local machine:
 
 - An up-to-date release of [NodeJS](https://nodejs.org/) and YARN
-- A SQL database with TYPEORM npm install --save typeorm mysql2 (https://docs.nestjs.com/recipes/sql-typeorm#sql-typeorm)
 
 ### 1.2 Project configuration
 
@@ -23,7 +25,7 @@ Start by cloning this project on your local machine.
 ``` sh
 git clone https://github.com/omowonuola/colkiechatroom.git
 yarn add to install dependencies
-NOTE: The Main branch is the updated branch for the codebase
+NOTE: The main branch is the updated branch for the codebase
 
 ```
 RUN WITH DOCKER
@@ -58,7 +60,20 @@ yarn run start:dev
 You can now head to `` and see the API Swagger docs. 
 The example User API that gets allows user to signup is located at the `` endpoint in the swagger documentation.
 
-## 2. Project structure
+## 2. Design Decisions
+
+```sh
+Architecture: The architecture of this chat room application is in one component which is just the backend. The backend is responsible for storing chat messages, handling user authentication, and broadcasting messages to all users in the chat room. 
+
+Data-structures: The main data structure used in a chat room application is a message. Each message typically contains information such as the sender's username, the timestamp of the message, and the text of the message itself. The messages were stored in the database for future retriever. For broadcasting messages to all users, the socket.emit model was used.
+
+Algorithms: The key algorithm used in this chat room application is the broadcasting algorithm, which is responsible for sending messages to all users in the chat room. The socket.emit model from socket.io was implemented, where each user subscribes to a channel or topic, and the backend broadcasts messages to all subscribers of the channel.
+
+Security: To ensure the security of the chat room application, user authentication and authorization was implemented using bcrypt. This was achieved by using authentication method of username and password authentication.
+
+The design decisions were implemented to create a chat room application that is scalable, secure, and efficient. Using the socket.io model for broadcasting messages helps to accommodate large number of users, the application efficiently send messages to all users in the chat room. By implementing user authentication, the application ensures the security of the users.
+```
+## 3. Project structure
 
 This template was made with a well-defined directory structure.
 
@@ -126,7 +141,7 @@ src/
 └── main.ts
 ```
 
-## 3. Default NPM commands
+## 4. Default NPM commands
 
 The YARN commands below are already included with this template and can be used to quickly run, build and test the project.
 
@@ -138,7 +153,7 @@ yarn run start:dev (use this to start the application locally)
 yarn run test:watch(use this to start the unit testing locally)
 ```
 
-## 4. Docker Command
+## 5. Docker Command
 
 The docker commands below are already included with this template and can be used to quickly run, build and test the project.
 
@@ -151,7 +166,9 @@ The docker configuration is in the docker-compose.yaml file
 ```
 
 
-## 5. Project goals
+## 6. Future Improvements
+```sh
 
-The goal of this project is to build a Chat Room that allows user to create room, add users to room, send message and receive message using NestJS.
+Additionally, encryption can be implemeted to secure the transmission of messages over the network which will.
 
+```
