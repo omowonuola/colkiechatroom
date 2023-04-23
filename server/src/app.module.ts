@@ -4,12 +4,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
 import { UserEntity } from './user/model/users.entity';
-import { RoomsService } from './Rooms/service/room-service/rooms.service';
+import { RoomsService } from './rooms/service/room-service/rooms.service';
 import { RoomsModule } from './rooms/rooms.module';
-import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
-import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';
-import { JoinedRoomEntity } from './Rooms/model/joined-room/joined-room.entity';
-import { MessageEntity } from './Rooms/model/message/message.entity';
+import { RoomEntity } from './rooms/model/rooms/rooms.entity';
+import { ConnectedUserEntity } from './rooms/model/connected-user/connected-user.entity';
+import { JoinedRoomEntity } from './rooms/model/joined-room/joined-room.entity';
+import { MessageEntity } from './rooms/model/message/message.entity';
 import { AuthModule } from './auth/auth.module';
 
 @Module({

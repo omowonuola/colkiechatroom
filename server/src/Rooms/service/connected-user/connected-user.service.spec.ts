@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConnectedUserService } from './connected-user.service';
 import { DeleteResult, Repository } from 'typeorm';
-import { ConnectedUserEntity } from '../../../Rooms/model/connected-user/connected-user.entity';
+import { ConnectedUserEntity } from '../../model/connected-user/connected-user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserEntity } from '../../../user/model/users.entity';
 
