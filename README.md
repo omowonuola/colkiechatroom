@@ -185,7 +185,7 @@ It takes in name as a message
 {
     "name": "remitly-founders"
 }
-![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/create-room%20image.png?raw=true)
+![Create A Room](https://github.com/omowonuola/colkiechatroom/blob/main/create-room%20image.png?raw=true)
 
 
 #Join A Room: 
@@ -200,7 +200,7 @@ It takes in the id of the room as a message
     "id": "caec2bd8-117d-4cf6-90e2-6f5ca7e3766b"
 }
 
-![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/join-room%20image.png?raw=true)
+![Join A Room](https://github.com/omowonuola/colkiechatroom/blob/main/join-room%20image.png?raw=true)
 
 
 #Send Message To A Room: 
@@ -220,5 +220,5 @@ It takes in the Id of the room as a message
     "text": "Where are You!"
 }
 
-![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
+![Send Message To A Room](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
 ```
