@@ -57,8 +57,8 @@ You are now ready to launch the NestJS application using the command below.
 yarn run start:dev
 ```
 
-You can now head to `` and see the API Swagger docs. 
-The example User API that gets allows user to signup is located at the `` endpoint in the swagger documentation.
+You can now head to `http://localhost:3000/api/#/` and see the API Swagger docs. 
+The example User API that gets allows user to signup is located at the `http://localhost:3000/api/#/user/UserController_signUp` endpoint in the swagger documentation.
 
 ## 2. Design Decisions
 
