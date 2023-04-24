@@ -185,9 +185,12 @@ It takes in name as a message
 {
     "name": "remitly-founders"
 }
+
+```
 ![Create A Room](https://github.com/omowonuola/colkiechatroom/blob/main/create-room%20image.png?raw=true)
 
 
+```sh
 #Join A Room: 
 
 The endpoint is used to join a room, It uses a bearer token authorization header
@@ -200,9 +203,12 @@ It takes in the id of the room as a message
     "id": "caec2bd8-117d-4cf6-90e2-6f5ca7e3766b"
 }
 
+
+```
 ![Join A Room](https://github.com/omowonuola/colkiechatroom/blob/main/join-room%20image.png?raw=true)
 
 
+```sh
 #Send Message To A Room: 
 
 The endpoint is used to send a message to a room and it emits it to all users in the room, 
@@ -220,6 +226,5 @@ It takes in the Id of the room as a message
     "text": "Where are You!"
 }
 
-![Send Message To A Room](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
 ```
 ![Send Message To A Room](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
