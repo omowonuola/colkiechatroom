@@ -209,7 +209,7 @@ The endpoint is used to send a message to a room and it emits it to all users in
 It uses a bearer token authorization header
 Authorization: (Token gotten from user signin)
 
-It takes in the id of the room as a message
+It takes in the Id of the room as a message
 
 {
     "room": 
