@@ -222,3 +222,4 @@ It takes in the Id of the room as a message
 
 ![Send Message To A Room](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
 ```
+![Send Message To A Room](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
