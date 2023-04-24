@@ -112,7 +112,7 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
       }
     } catch (error) {
-      console.log(error);
+      this.logger.log(error);
     }
   }
 

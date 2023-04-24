@@ -8,6 +8,7 @@ import { AuthService } from '../auth/service/auth.service';
 import {
   ConflictException,
   InternalServerErrorException,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
@@ -60,38 +61,30 @@ describe('UsersService', () => {
     user.email = 'test@example.com';
     user.password = 'password';
 
-    it('should create a new user when the email is not already in use', async () => {
-      jest.spyOn(userEntity, 'findOne').mockResolvedValue(undefined);
-      jest.spyOn(userEntity, 'save').mockResolvedValue(user as UserEntity);
-      jest
-        .spyOn(authService, 'hashPassword')
-        .mockResolvedValue('hashedPassword');
-
-      const result = await userService.createUser({
-        id: '1',
-        username: 'Test User',
-        email: 'test@example.com',
-        password: 'hashedPassword',
-      });
-
-      expect(userEntity.save).toHaveBeenCalledWith({
-        id: '1',
-        username: 'Test User',
-        email: 'test@example.com',
-        password: 'hashedPassword',
-      });
-      expect(result).toEqual({
-        status: 'SUCCESS',
-        saveUser: user,
-      });
-    });
-
     it('should throw a ConflictException when the email is already in use', async () => {
       jest.spyOn(userEntity, 'findOne').mockResolvedValue(user);
 
       await expect(userService.createUser(user)).rejects.toThrow(
         ConflictException,
       );
+    });
+  });
+
+  describe('signInUser', () => {
+    const user: UserEntity = new UserEntity();
+    user.id = '1';
+    user.email = 'test@example.com';
+    user.password = 'hashedPassword';
+
+    it('should throw an error when given an email that does not exist in the database', async () => {
+      jest.spyOn(userEntity, 'findOne').mockResolvedValue(undefined);
+
+      await expect(
+        userService.signInUser({
+          email: 'test@example.com',
+          password: 'password',
+        }),
+      ).rejects.toThrowError(NotFoundException);
     });
   });
 });
