@@ -129,7 +129,6 @@ export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('joinRoom')
   async onJoinRoom(socket: Socket, room: RoomI) {
     const getUser = await this.decodeToken(socket);
-    console.log(getUser, 'newuser');
     try {
       const messages = await this.messageRepository.findMessagesForRoom(room, {
         limit: 10,

@@ -52,7 +52,6 @@ export class UserRepository {
         );
         if (matchPassword) {
           const payload: UserI = await this.findOne(checkUser.id);
-          console.log(payload);
           const accessToken = await this.authService.generateJwt(payload);
           return {
             status: 'SUCCESS',
