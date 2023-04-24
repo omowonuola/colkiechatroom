@@ -167,10 +167,58 @@ The docker configuration is in the docker-compose.yaml file
 
 ```
 
-
 ## 6. Future Improvements
 ```sh
 
 Additionally, encryption can be implemeted to secure the transmission of messages over the network which will.
 
+```
+## 7. Postman Documentation Image
+```sh
+
+#Create A Room: 
+
+The endpoint is used to create a room, It uses a bearer token authorization header
+Authorization: (Token gotten from user signin)
+
+It takes in name as a message
+{
+    "name": "remitly-founders"
+}
+![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/create-room%20image.png?raw=true)
+
+
+#Join A Room: 
+
+The endpoint is used to join a room, It uses a bearer token authorization header
+Authorization: (Token gotten from user signin)
+The endpoint displays all previous messages that has been sent to the room by other users.
+
+It takes in the id of the room as a message
+
+{
+    "id": "caec2bd8-117d-4cf6-90e2-6f5ca7e3766b"
+}
+
+![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/join-room%20image.png?raw=true)
+
+
+#Send Message To A Room: 
+
+The endpoint is used to send a message to a room and it emits it to all users in the room, 
+It uses a bearer token authorization header
+Authorization: (Token gotten from user signin)
+
+It takes in the id of the room as a message
+
+{
+    "room": 
+    {
+        
+        "id":"caec2bd8-117d-4cf6-90e2-6f5ca7e3766b"
+    },
+    "text": "Where are You!"
+}
+
+![Alt Text](https://github.com/omowonuola/colkiechatroom/blob/main/send-message%20image.png?raw=true)
 ```
