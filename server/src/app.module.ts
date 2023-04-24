@@ -3,14 +3,7 @@ import 'reflect-metadata';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
-import { UserEntity } from './user/model/users.entity';
-import { RoomsService } from './rooms/service/room-service/rooms.service';
 import { RoomsModule } from './rooms/rooms.module';
-import { RoomEntity } from './rooms/model/rooms/rooms.entity';
-import { ConnectedUserEntity } from './rooms/model/connected-user/connected-user.entity';
-import { JoinedRoomEntity } from './rooms/model/joined-room/joined-room.entity';
-import { MessageEntity } from './rooms/model/message/message.entity';
-import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,24 +12,16 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     RoomsModule,
-    AuthModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        type: 'mysql',
+        type: 'postgres',
         host: configService.get('DB_HOST'),
         port: configService.get('DB_PORT'),
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_DATABASE'),
-        entities: [
-          UserEntity,
-          RoomEntity,
-          ConnectedUserEntity,
-          JoinedRoomEntity,
-          MessageEntity,
-        ],
         autoLoadEntities: true,
         synchronize: true,
       }),

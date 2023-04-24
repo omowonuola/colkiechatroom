@@ -5,15 +5,15 @@ services:
     container_name: server
     build: server/ 
     ports:
-      - 8081:8081
+      - 3000:3000
     restart: on-failure
     volumes:
       - server:/usr/src/app
     environment:
-            - PORT=8081
+            - PORT=3000
             - DB_HOST=db
-            - DB_PORT=3306
-            - DB_USERNAME=root
+            - DB_PORT=5432
+            - DB_USERNAME=postgres
             - DB_PASSWORD=birmingham
             - DB_DATABASE=chatroom
             - JWT_SECRET='{dZqC_/KBzNSuPT~@!Gr5NHG^j]Jz"VQf(6>Q,\dp?_z9eC(C$-bJCEwRM}pC=2!'

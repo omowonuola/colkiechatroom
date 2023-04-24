@@ -12,6 +12,7 @@ import { RoomEntity } from '../../rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from '../../rooms/model/connected-user/connected-user.entity';
 import { JoinedRoomEntity } from '../../rooms/model/joined-room/joined-room.entity';
 import { MessageEntity } from '../../rooms/model/message/message.entity';
+// import { RoomEntity } from 'src/Rooms/model/rooms/rooms.entity';
 
 @Entity({ name: 'users' })
 export class UserEntity {

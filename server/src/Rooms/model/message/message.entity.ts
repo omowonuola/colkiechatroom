@@ -41,14 +41,14 @@ export class MessageEntity {
   room: RoomEntity;
 
   @ApiProperty({
-    example: '24-3-2020',
+    example: '2023-04-23T23:08:33.170Z',
     description: 'createdAt',
   })
   @CreateDateColumn()
   createdAt: Date;
 
   @ApiProperty({
-    example: '24-3-2020',
+    example: '2023-04-23T23:08:33.170Z',
     description: 'updatedAt',
   })
   @UpdateDateColumn()
