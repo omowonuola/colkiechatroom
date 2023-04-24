@@ -45,7 +45,7 @@ The next step will be to install all the dependencies of the project.
 use yarn install for the server dependencies installation
 ```
 
-For a standard development configuration, you can leave the default values for PORT, which has the default value of 8080.
+For a standard development configuration, you can leave the default values for PORT, which has the default value of 3000.
 
 ### 1.3 Launch and discover with YARN
 
@@ -63,6 +63,8 @@ The example User API that gets allows user to signup is located at the `` endpoi
 ## 2. Design Decisions
 
 ```sh
+
+
 Architecture: The architecture of this chat room application is in one component which is just the backend. The backend is responsible for storing chat messages, handling user authentication, and broadcasting messages to all users in the chat room. 
 
 Data-structures: The main data structure used in a chat room application is a message. Each message typically contains information such as the sender's username, the timestamp of the message, and the text of the message itself. The messages were stored in the database for future retriever. For broadcasting messages to all users, the socket.emit model was used.
