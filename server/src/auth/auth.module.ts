@@ -5,7 +5,6 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    // PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

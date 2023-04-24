@@ -52,9 +52,8 @@ export class UserRepository {
         );
         if (matchPassword) {
           const payload: UserI = await this.findOne(checkUser.id);
-          const accessToken = this.authService.generateJwt(payload);
-
-          console.log(accessToken);
+          console.log(payload);
+          const accessToken = await this.authService.generateJwt(payload);
           return {
             status: 'SUCCESS',
             id: checkUser?.id,
@@ -76,10 +75,13 @@ export class UserRepository {
     return paginate<UserEntity>(this.userEntity, options);
   }
 
-  private async findByEmail(email: string): Promise<UserI> {
-    return this.userEntity.findOne({
-      where: { email },
-    });
+  private async findByEmail(email: string): Promise<UserI | null> {
+    const user = await this.userEntity.findOne({ where: { email } });
+    if (user) {
+      return user;
+    } else {
+      return null;
+    }
   }
 
   async findUsersByUsername(username: string): Promise<UserI[]> {
