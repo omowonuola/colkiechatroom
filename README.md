@@ -34,7 +34,6 @@ The server project is dockerized, you can run it through the docker-compose file
 ```sh
 # Launch the development server with docker
 
-cd server(To run the server application)
 docker-compose up
 ```
 RUN WITH SERVER(Yarn)

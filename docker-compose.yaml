@@ -16,7 +16,7 @@ services:
             - DB_USERNAME=postgres
             - DB_PASSWORD=birmingham
             - DB_DATABASE=chatroom
-            - JWT_SECRET='{dZqC_/KBzNSuPT~@!Gr5NHG^j]Jz"VQf(6>Q,\dp?_z9eC(C$-bJCEwRM}pC=2!'
+            - JWT_SECRET='wAuv539rJReFsJfSusVsptWeb3xBTnMpXTt99PNHVcYnFGtU9TL8L9Cgmxr5En6r'
     networks:
             - database
 

@@ -2,7 +2,7 @@ FROM node:alpine
 
 # Set the working directory
 
-ENV APP_PATH=/usr/src/app 
+ENV APP_PATH=/usr/src/app/ 
 
 WORKDIR $APP_PATH
 COPY . $APP_PATH
