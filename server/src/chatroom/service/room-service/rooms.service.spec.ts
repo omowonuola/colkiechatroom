@@ -4,7 +4,7 @@ import { RoomEntity } from '../../model/rooms/rooms.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserI } from 'src/user/model/user.interface';
-import { RoomI } from 'src/rooms/model/rooms/rooms.interface';
+import { RoomI } from 'src/chatroom/model/rooms/rooms.interface';
 import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 
 describe('RoomsService', () => {

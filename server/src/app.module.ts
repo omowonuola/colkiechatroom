@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
-import { RoomsModule } from './rooms/rooms.module';
+import { RoomsModule } from './chatroom/rooms.module';
 
 @Module({
   imports: [

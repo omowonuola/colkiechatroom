@@ -8,10 +8,10 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoomEntity } from '../../rooms/model/rooms/rooms.entity';
-import { ConnectedUserEntity } from '../../rooms/model/connected-user/connected-user.entity';
-import { JoinedRoomEntity } from '../../rooms/model/joined-room/joined-room.entity';
-import { MessageEntity } from '../../rooms/model/message/message.entity';
+import { RoomEntity } from '../../chatroom/model/rooms/rooms.entity';
+import { ConnectedUserEntity } from '../../chatroom/model/connected-user/connected-user.entity';
+import { JoinedRoomEntity } from '../../chatroom/model/joined-room/joined-room.entity';
+import { MessageEntity } from '../../chatroom/model/message/message.entity';
 // import { RoomEntity } from 'src/Rooms/model/rooms/rooms.entity';
 
 @Entity({ name: 'users' })
