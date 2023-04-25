@@ -4,7 +4,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './user/user.module';
 import { UserEntity } from './user/model/users.entity';
-import { RoomsService } from './Rooms/service/room-service/rooms.service';
 import { RoomsModule } from './rooms/rooms.module';
 import { RoomEntity } from './Rooms/model/rooms/rooms.entity';
 import { ConnectedUserEntity } from './Rooms/model/connected-user/connected-user.entity';

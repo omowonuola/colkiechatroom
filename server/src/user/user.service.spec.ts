@@ -3,15 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { UserEntity } from './model/users.entity';
 import { UserRepository } from './user.repository';
-import { LoginUserDto } from './dto/login-user.dto';
 import { AuthService } from '../auth/service/auth.service';
-import {
-  ConflictException,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from './dto/create-user.dto';
+import { ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 describe('UsersService', () => {
