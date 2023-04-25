@@ -28,6 +28,7 @@ export class RoomsService {
       where: {
         id: roomId,
       },
+      relations: ['users'],
     });
   }
 

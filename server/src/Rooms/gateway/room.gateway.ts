@@ -19,13 +19,19 @@ import { JoinedRoomService } from '../service/joined-room/joined-room.service';
 import { MessageI } from '../model/message/message.interface';
 import { JoinedRoomI } from '../model/joined-room/joined-room.interface';
 import { AuthService } from 'src/auth/service/auth.service';
+import { Logger } from '@nestjs/common';
 
 @WebSocketGateway({
-  cors: { origin: ['https://hoppscotch.io', 'http://localhost:8080'] },
+  cors: {
+    origin: [
+      'https://hoppscotch.io',
+      'http://localhost:8080',
+      'http://localhost:3000',
+    ],
+  },
 })
-export class RoomGateway
-  implements OnGatewayConnection, OnGatewayDisconnect, OnModuleInit
-{
+export class RoomGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  logger = new Logger();
   @WebSocketServer()
   server: Server;
 
@@ -40,15 +46,10 @@ export class RoomGateway
     private authService: AuthService,
   ) {}
 
-  async onModuleInit() {
-    await this.connectedUserRepository.deleteAll();
-    await this.joinedRoomRepository.deleteAll();
-  }
-
   async handleConnection(socket: Socket) {
     try {
       const decodeToken = await this.authService.verifyJwt(
-        socket.handshake.auth.token,
+        socket.handshake.headers.authorization,
       );
       const user: UserI = await this.userRepository.getOne(decodeToken.user.id);
       if (!user) {
@@ -83,23 +84,35 @@ export class RoomGateway
     socket.disconnect();
   }
 
+  private async decodeToken(socket: Socket) {
+    const connect = await this.authService.verifyJwt(
+      socket.handshake.headers.authorization,
+    );
+    return connect.user;
+  }
+
   @SubscribeMessage('createRoom')
   async onCreateRoom(socket: Socket, room: RoomI) {
-    const createdRoom: RoomI = await this.roomRepository.createRoom(
-      room,
-      socket.data.user,
-    );
+    const getUser = await this.decodeToken(socket);
+    try {
+      const createdRoom: RoomI = await this.roomRepository.createRoom(
+        room,
+        getUser,
+      );
 
-    for (const user of createdRoom.users) {
-      const connections: ConnectedUserI[] =
-        await this.connectedUserRepository.findByUser(user);
-      const rooms = await this.roomRepository.getRoomsForUser(user.id, {
-        page: 1,
-        limit: 10,
-      });
-      for (const connection of connections) {
-        await this.server.to(connection.socketId).emit('rooms', rooms);
+      for (const user of createdRoom.users) {
+        const connections: ConnectedUserI[] =
+          await this.connectedUserRepository.findByUser(user);
+        const rooms = await this.roomRepository.getRoomsForUser(user.id, {
+          page: 1,
+          limit: 10,
+        });
+        for (const connection of connections) {
+          await this.server.to(connection.socketId).emit('rooms', rooms);
+        }
       }
+    } catch (error) {
+      this.logger.log(error);
     }
   }
 
@@ -115,20 +128,25 @@ export class RoomGateway
 
   @SubscribeMessage('joinRoom')
   async onJoinRoom(socket: Socket, room: RoomI) {
-    const messages = await this.messageRepository.findMessagesForRoom(room, {
-      limit: 10,
-      page: 1,
-    });
+    const getUser = await this.decodeToken(socket);
+    try {
+      const messages = await this.messageRepository.findMessagesForRoom(room, {
+        limit: 10,
+        page: 1,
+      });
 
-    // Save Connection to Room
-    await this.joinedRoomRepository.create({
-      socketId: socket.id,
-      user: socket.data.user,
-      room,
-    });
+      // Save Connection to Room
+      await this.joinedRoomRepository.create({
+        socketId: socket.id,
+        user: getUser,
+        room,
+      });
 
-    // send last message from Room to User
-    await this.server.to(socket.id).emit('messages', messages);
+      // send last message from Room to User
+      await this.server.to(socket.id).emit('messages', messages);
+    } catch (error) {
+      this.logger.log(error);
+    }
   }
 
   @SubscribeMessage('leaveRoom')
@@ -139,19 +157,25 @@ export class RoomGateway
 
   @SubscribeMessage('addMessage')
   async onAddMessage(socket: Socket, message: MessageI) {
-    const createdMessage: MessageI = await this.messageRepository.create({
-      ...message,
-      user: socket.data.user,
-    });
-    const room: RoomI = await this.roomRepository.getRoom(
-      createdMessage.room.id,
-    );
-    const joinedUsers: JoinedRoomI[] =
-      await this.joinedRoomRepository.findByRoom(room);
-
-    //   send message to all joined users(currently-online) in the room
-    for (const user of joinedUsers) {
-      await this.server.to(user.socketId).emit('message', createdMessage);
+    const getUser = await this.decodeToken(socket);
+    try {
+      const createdMessage: MessageI = await this.messageRepository.create({
+        ...message,
+        user: getUser,
+      });
+      const room: RoomI = await this.roomRepository.getRoom(
+        createdMessage.room.id,
+      );
+      const joinedUsers: JoinedRoomI[] =
+        await this.joinedRoomRepository.findByRoom(room);
+      //   send message to all joined users(currently-online) in the room
+      for (const user of joinedUsers) {
+        await this.server
+          .to(user.socketId)
+          .emit('messageAdded', createdMessage);
+      }
+    } catch (error) {
+      this.logger.log(error);
     }
   }
 }

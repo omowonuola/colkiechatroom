@@ -27,7 +27,7 @@ export class RoomEntity {
 
   @ApiProperty({
     example: 'trespass',
-    description: 'The Room Name',
+    description: 'The Room Description',
   })
   @Column({ nullable: true })
   description: string;
@@ -41,28 +41,28 @@ export class RoomEntity {
   users: UserEntity[];
 
   @ApiProperty({
-    example: UserEntity,
-    description: 'users',
+    example: JoinedRoomEntity,
+    description: 'joinedUsers',
   })
   @OneToMany(() => JoinedRoomEntity, (joinedRoom) => joinedRoom.room)
   joinedUsers: JoinedRoomEntity[];
 
   @ApiProperty({
-    example: UserEntity,
-    description: 'users',
+    example: MessageEntity,
+    description: 'messages',
   })
   @OneToMany(() => MessageEntity, (message) => message.room)
   messages: MessageEntity[];
 
   @ApiProperty({
-    example: 'trespass@gmail.com',
+    example: '2023-04-23T23:08:33.170Z',
     description: 'created At',
   })
   @CreateDateColumn()
   createdAt: Date;
 
   @ApiProperty({
-    example: 'Password',
+    example: '2023-04-23T23:08:33.170Z',
     description: 'updated At',
   })
   @UpdateDateColumn()

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JoinedRoomEntity } from '../../model/joined-room/joined-room.entity';
 import { JoinedRoomI } from '../../model/joined-room/joined-room.interface';
-import { RoomI } from '../../../Rooms/model/rooms/rooms.interface';
+import { RoomI } from '../../model/rooms/rooms.interface';
 import { UserI } from '../../../user/model/user.interface';
 import { Repository } from 'typeorm';
 
@@ -21,8 +21,18 @@ export class JoinedRoomService {
     return this.joinedRoomRepository.find({ where: user });
   }
 
+  //   async findByRoom(room: RoomI): Promise<JoinedRoomI[]> {
+  //     return this.joinedRoomRepository.find({ where: room });
+  //   }
+
   async findByRoom(room: RoomI): Promise<JoinedRoomI[]> {
-    return this.joinedRoomRepository.find({ where: room });
+    return this.joinedRoomRepository.find({
+      where: {
+        room: {
+          id: room.id,
+        },
+      },
+    });
   }
 
   async deleteBySocketId(socketId: string) {

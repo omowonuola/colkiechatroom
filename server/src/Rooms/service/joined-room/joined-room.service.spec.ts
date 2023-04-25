@@ -147,9 +147,6 @@ describe('JoinedRoomService', () => {
       const result = await service.findByRoom(room);
 
       expect(result).toEqual([joinedRoom1, joinedRoom2]);
-      //   expect(repository.find).toHaveBeenCalledWith({
-      //     where: { room },
-      //   });
     });
   });
 
